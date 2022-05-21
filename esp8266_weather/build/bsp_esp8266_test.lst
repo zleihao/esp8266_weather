@@ -1,0 +1,869 @@
+ARM GAS  /tmp/ccHm4Ruu.s 			page 1
+
+
+   1              		.cpu cortex-m3
+   2              		.eabi_attribute 20, 1
+   3              		.eabi_attribute 21, 1
+   4              		.eabi_attribute 23, 3
+   5              		.eabi_attribute 24, 1
+   6              		.eabi_attribute 25, 1
+   7              		.eabi_attribute 26, 1
+   8              		.eabi_attribute 30, 1
+   9              		.eabi_attribute 34, 1
+  10              		.eabi_attribute 18, 4
+  11              		.file	"bsp_esp8266_test.c"
+  12              		.text
+  13              	.Ltext0:
+  14              		.cfi_sections	.debug_frame
+  15              		.section	.rodata.analytical_data.str1.4,"aMS",%progbits,1
+  16              		.align	2
+  17              	.LC0:
+  18 0000 6E616D65 		.ascii	"name\000"
+  18      00
+  19 0005 000000   		.align	2
+  20              	.LC1:
+  21 0008 255B5E22 		.ascii	"%[^\"]\000"
+  21      5D00
+  22 000e 0000     		.align	2
+  23              	.LC2:
+  24 0010 63697479 		.ascii	"city: %s\012\000"
+  24      3A202573 
+  24      0A00
+  25 001a 0000     		.align	2
+  26              	.LC3:
+  27 001c 74657874 		.ascii	"text\000"
+  27      00
+  28 0021 000000   		.align	2
+  29              	.LC4:
+  30 0024 74656D70 		.ascii	"temp: %s\012\000"
+  30      3A202573 
+  30      0A00
+  31 002e 0000     		.align	2
+  32              	.LC5:
+  33 0030 74656D70 		.ascii	"temperature\000"
+  33      65726174 
+  33      75726500 
+  34              		.align	2
+  35              	.LC6:
+  36 003c 6C617374 		.ascii	"last_update\000"
+  36      5F757064 
+  36      61746500 
+  37              		.align	2
+  38              	.LC7:
+  39 0048 255B5E54 		.ascii	"%[^T]\000"
+  39      5D00
+  40              		.section	.text.analytical_data,"ax",%progbits
+  41              		.align	1
+  42              		.global	analytical_data
+  43              		.arch armv7-m
+  44              		.syntax unified
+  45              		.thumb
+ARM GAS  /tmp/ccHm4Ruu.s 			page 2
+
+
+  46              		.thumb_func
+  47              		.fpu softvfp
+  49              	analytical_data:
+  50              	.LFB32:
+  51              		.file 1 "./Hardware/ESP8266/bsp_esp8266_test.c"
+   1:./Hardware/ESP8266/bsp_esp8266_test.c **** #include "bsp_esp8266_test.h"
+   2:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+   3:./Hardware/ESP8266/bsp_esp8266_test.c **** volatile uint8_t ucTcpClosedFlag = 0;
+   4:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+   5:./Hardware/ESP8266/bsp_esp8266_test.c **** //解析后的数据
+   6:./Hardware/ESP8266/bsp_esp8266_test.c **** typedef struct Date
+   7:./Hardware/ESP8266/bsp_esp8266_test.c **** {
+   8:./Hardware/ESP8266/bsp_esp8266_test.c **** 	char text_city[10];   //城市
+   9:./Hardware/ESP8266/bsp_esp8266_test.c **** 	char text_weather[10];    //天气
+  10:./Hardware/ESP8266/bsp_esp8266_test.c **** 	char text_temp[10];    //温度
+  11:./Hardware/ESP8266/bsp_esp8266_test.c **** 	char text_date[30];   //日期
+  12:./Hardware/ESP8266/bsp_esp8266_test.c **** }WEATHER_InitTypeDef;
+  13:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  14:./Hardware/ESP8266/bsp_esp8266_test.c **** /******************************************************************
+  15:./Hardware/ESP8266/bsp_esp8266_test.c **** *    !!!!! 注意：ESP8266 接收到的数据存储在数组 strEsp8266_Fram_Record .Data_RX_BUF �
+  16:./Hardware/ESP8266/bsp_esp8266_test.c **** *               需要解析数据，并做出对应的操作
+  17:./Hardware/ESP8266/bsp_esp8266_test.c **** ******************************************************************/
+  18:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  19:./Hardware/ESP8266/bsp_esp8266_test.c **** /**
+  20:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @brief  analytical_data
+  21:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @param  null
+  22:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @return null
+  23:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @note   解析心知天气发送的信息
+  24:./Hardware/ESP8266/bsp_esp8266_test.c ****  *         这是接收到的消息：{"results":[{"location":{"id":"WW0V9QP93VS8","name":"郑州",
+  25:./Hardware/ESP8266/bsp_esp8266_test.c ****  */
+  26:./Hardware/ESP8266/bsp_esp8266_test.c **** void analytical_data(void) {
+  52              		.loc 1 26 28 view -0
+  53              		.cfi_startproc
+  54              		@ args = 0, pretend = 0, frame = 64
+  55              		@ frame_needed = 0, uses_anonymous_args = 0
+  56 0000 70B5     		push	{r4, r5, r6, lr}
+  57              	.LCFI0:
+  58              		.cfi_def_cfa_offset 16
+  59              		.cfi_offset 4, -16
+  60              		.cfi_offset 5, -12
+  61              		.cfi_offset 6, -8
+  62              		.cfi_offset 14, -4
+  63 0002 90B0     		sub	sp, sp, #64
+  64              	.LCFI1:
+  65              		.cfi_def_cfa_offset 80
+  27:./Hardware/ESP8266/bsp_esp8266_test.c **** 	WEATHER_InitTypeDef WEATHER_InitStruct;
+  66              		.loc 1 27 2 view .LVU1
+  28:./Hardware/ESP8266/bsp_esp8266_test.c **** 	char *str;
+  67              		.loc 1 28 2 view .LVU2
+  29:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  30:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//得到城市
+  31:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//首先指针 str 指到 "name",再将指针加7得到 "郑州"
+  32:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str = strstr(strEsp8266_Fram_Record.Data_RX_BUF,"name");
+  68              		.loc 1 32 2 view .LVU3
+  69              		.loc 1 32 8 is_stmt 0 view .LVU4
+  70 0004 1E4C     		ldr	r4, .L3
+  71 0006 1F49     		ldr	r1, .L3+4
+ARM GAS  /tmp/ccHm4Ruu.s 			page 3
+
+
+  72 0008 2046     		mov	r0, r4
+  73 000a FFF7FEFF 		bl	strstr
+  74              	.LVL0:
+  33:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str += 7;
+  75              		.loc 1 33 2 is_stmt 1 view .LVU5
+  34:./Hardware/ESP8266/bsp_esp8266_test.c **** 	sscanf(str,"%[^\"]",WEATHER_InitStruct.text_city);
+  76              		.loc 1 34 2 view .LVU6
+  77 000e 1E4E     		ldr	r6, .L3+8
+  78 0010 01AA     		add	r2, sp, #4
+  79 0012 3146     		mov	r1, r6
+  80 0014 0730     		adds	r0, r0, #7
+  81              	.LVL1:
+  82              		.loc 1 34 2 is_stmt 0 view .LVU7
+  83 0016 FFF7FEFF 		bl	sscanf
+  84              	.LVL2:
+  35:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf("city: %s\n",WEATHER_InitStruct.text_city);
+  85              		.loc 1 35 2 is_stmt 1 view .LVU8
+  86 001a 01A9     		add	r1, sp, #4
+  87 001c 1B48     		ldr	r0, .L3+12
+  88 001e FFF7FEFF 		bl	printf
+  89              	.LVL3:
+  36:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  37:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//得到天气
+  38:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//首先指针 str 指到 "text",再将指针加7得到 "阴" 
+  39:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str = strstr(strEsp8266_Fram_Record.Data_RX_BUF,"text");
+  90              		.loc 1 39 2 view .LVU9
+  91              		.loc 1 39 8 is_stmt 0 view .LVU10
+  92 0022 1B49     		ldr	r1, .L3+16
+  93 0024 2046     		mov	r0, r4
+  94 0026 FFF7FEFF 		bl	strstr
+  95              	.LVL4:
+  40:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str += 7;
+  96              		.loc 1 40 2 is_stmt 1 view .LVU11
+  41:./Hardware/ESP8266/bsp_esp8266_test.c **** 	sscanf(str,"%[^\"]",WEATHER_InitStruct.text_weather);
+  97              		.loc 1 41 2 view .LVU12
+  98 002a 0DF10E02 		add	r2, sp, #14
+  99 002e 3146     		mov	r1, r6
+ 100 0030 0730     		adds	r0, r0, #7
+ 101              	.LVL5:
+ 102              		.loc 1 41 2 is_stmt 0 view .LVU13
+ 103 0032 FFF7FEFF 		bl	sscanf
+ 104              	.LVL6:
+  42:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf("temp: %s\n",WEATHER_InitStruct.text_weather);
+ 105              		.loc 1 42 2 is_stmt 1 view .LVU14
+ 106 0036 174D     		ldr	r5, .L3+20
+ 107 0038 0DF10E01 		add	r1, sp, #14
+ 108 003c 2846     		mov	r0, r5
+ 109 003e FFF7FEFF 		bl	printf
+ 110              	.LVL7:
+  43:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  44:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//得到温度
+  45:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//首先指针 str 指到 "temperature",再将指针加 14 得到 "29"   
+  46:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str = strstr(strEsp8266_Fram_Record.Data_RX_BUF,"temperature");
+ 111              		.loc 1 46 2 view .LVU15
+ 112              		.loc 1 46 8 is_stmt 0 view .LVU16
+ 113 0042 1549     		ldr	r1, .L3+24
+ 114 0044 2046     		mov	r0, r4
+ARM GAS  /tmp/ccHm4Ruu.s 			page 4
+
+
+ 115 0046 FFF7FEFF 		bl	strstr
+ 116              	.LVL8:
+  47:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str += 14;
+ 117              		.loc 1 47 2 is_stmt 1 view .LVU17
+  48:./Hardware/ESP8266/bsp_esp8266_test.c **** 	sscanf(str,"%[^\"]",WEATHER_InitStruct.text_temp);
+ 118              		.loc 1 48 2 view .LVU18
+ 119 004a 06AA     		add	r2, sp, #24
+ 120 004c 3146     		mov	r1, r6
+ 121 004e 0E30     		adds	r0, r0, #14
+ 122              	.LVL9:
+ 123              		.loc 1 48 2 is_stmt 0 view .LVU19
+ 124 0050 FFF7FEFF 		bl	sscanf
+ 125              	.LVL10:
+  49:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf("temp: %s\n",WEATHER_InitStruct.text_temp);
+ 126              		.loc 1 49 2 is_stmt 1 view .LVU20
+ 127 0054 06A9     		add	r1, sp, #24
+ 128 0056 2846     		mov	r0, r5
+ 129 0058 FFF7FEFF 		bl	printf
+ 130              	.LVL11:
+  50:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  51:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//得到日期
+  52:./Hardware/ESP8266/bsp_esp8266_test.c **** 	//首先指针 str 指到 "last_update",再将指针加 14 得到 "29"   
+  53:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str = strstr(strEsp8266_Fram_Record.Data_RX_BUF,"last_update");
+ 131              		.loc 1 53 2 view .LVU21
+ 132              		.loc 1 53 8 is_stmt 0 view .LVU22
+ 133 005c 0F49     		ldr	r1, .L3+28
+ 134 005e 2046     		mov	r0, r4
+ 135 0060 FFF7FEFF 		bl	strstr
+ 136              	.LVL12:
+  54:./Hardware/ESP8266/bsp_esp8266_test.c **** 	str += 14;
+ 137              		.loc 1 54 2 is_stmt 1 view .LVU23
+  55:./Hardware/ESP8266/bsp_esp8266_test.c **** 	sscanf(str,"%[^T]",WEATHER_InitStruct.text_date);
+ 138              		.loc 1 55 2 view .LVU24
+ 139 0064 0DF12202 		add	r2, sp, #34
+ 140 0068 0D49     		ldr	r1, .L3+32
+ 141 006a 0E30     		adds	r0, r0, #14
+ 142              	.LVL13:
+ 143              		.loc 1 55 2 is_stmt 0 view .LVU25
+ 144 006c FFF7FEFF 		bl	sscanf
+ 145              	.LVL14:
+  56:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf("temp: %s\n",WEATHER_InitStruct.text_date);
+ 146              		.loc 1 56 2 is_stmt 1 view .LVU26
+ 147 0070 0DF12201 		add	r1, sp, #34
+ 148 0074 2846     		mov	r0, r5
+ 149 0076 FFF7FEFF 		bl	printf
+ 150              	.LVL15:
+  57:./Hardware/ESP8266/bsp_esp8266_test.c **** }
+ 151              		.loc 1 57 1 is_stmt 0 view .LVU27
+ 152 007a 10B0     		add	sp, sp, #64
+ 153              	.LCFI2:
+ 154              		.cfi_def_cfa_offset 16
+ 155              		@ sp needed
+ 156 007c 70BD     		pop	{r4, r5, r6, pc}
+ 157              	.L4:
+ 158 007e 00BF     		.align	2
+ 159              	.L3:
+ 160 0080 00000000 		.word	strEsp8266_Fram_Record
+ARM GAS  /tmp/ccHm4Ruu.s 			page 5
+
+
+ 161 0084 00000000 		.word	.LC0
+ 162 0088 08000000 		.word	.LC1
+ 163 008c 10000000 		.word	.LC2
+ 164 0090 1C000000 		.word	.LC3
+ 165 0094 24000000 		.word	.LC4
+ 166 0098 30000000 		.word	.LC5
+ 167 009c 3C000000 		.word	.LC6
+ 168 00a0 48000000 		.word	.LC7
+ 169              		.cfi_endproc
+ 170              	.LFE32:
+ 172              		.section	.rodata.ESP8266_StaTcpClient_Unvarnish_ConfigTest.str1.4,"aMS",%progbits,1
+ 173              		.align	2
+ 174              	.LC8:
+ 175 0000 0D0A436F 		.ascii	"\015\012Configuring ESP8266 ......\015\000"
+ 175      6E666967 
+ 175      7572696E 
+ 175      67204553 
+ 175      50383236 
+ 176 001e 0000     		.align	2
+ 177              	.LC9:
+ 178 0020 0D0A454E 		.ascii	"\015\012ENABLE ESP8266 ......\015\000"
+ 178      41424C45 
+ 178      20455350 
+ 178      38323636 
+ 178      202E2E2E 
+ 179 0039 000000   		.align	2
+ 180              	.LC10:
+ 181 003c 0D0A436F 		.ascii	"\015\012Configuring work mode: STA ......\015\000"
+ 181      6E666967 
+ 181      7572696E 
+ 181      6720776F 
+ 181      726B206D 
+ 182 0061 000000   		.align	2
+ 183              	.LC11:
+ 184 0064 0D0A436F 		.ascii	"\015\012Connecting WiFi ......\015\000"
+ 184      6E6E6563 
+ 184      74696E67 
+ 184      20576946 
+ 184      69202E2E 
+ 185 007e 0000     		.align	2
+ 186              	.LC12:
+ 187 0080 68313233 		.ascii	"h123456.\000"
+ 187      3435362E 
+ 187      00
+ 188 0089 000000   		.align	2
+ 189              	.LC13:
+ 190 008c 5265646D 		.ascii	"Redmi K40\000"
+ 190      69204B34 
+ 190      3000
+ 191 0096 0000     		.align	2
+ 192              	.LC14:
+ 193 0098 0D0A4469 		.ascii	"\015\012Disable multiple connections ......\015\000"
+ 193      7361626C 
+ 193      65206D75 
+ 193      6C746970 
+ 193      6C652063 
+ 194 00bf 00       		.align	2
+ARM GAS  /tmp/ccHm4Ruu.s 			page 6
+
+
+ 195              	.LC15:
+ 196 00c0 0D0A436F 		.ascii	"\015\012Connecting to server ......\015\000"
+ 196      6E6E6563 
+ 196      74696E67 
+ 196      20746F20 
+ 196      73657276 
+ 197 00df 00       		.align	2
+ 198              	.LC16:
+ 199 00e0 383000   		.ascii	"80\000"
+ 200 00e3 00       		.align	2
+ 201              	.LC17:
+ 202 00e4 6170692E 		.ascii	"api.seniverse.com\000"
+ 202      73656E69 
+ 202      76657273 
+ 202      652E636F 
+ 202      6D00
+ 203 00f6 0000     		.align	2
+ 204              	.LC18:
+ 205 00f8 0D0A456E 		.ascii	"\015\012Enter transparent transmission mode ......\015"
+ 205      74657220 
+ 205      7472616E 
+ 205      73706172 
+ 205      656E7420 
+ 206 0125 00       		.ascii	"\000"
+ 207 0126 0000     		.align	2
+ 208              	.LC19:
+ 209 0128 0D0A436F 		.ascii	"\015\012Configuration of ESP8266 is complete\015\000"
+ 209      6E666967 
+ 209      75726174 
+ 209      696F6E20 
+ 209      6F662045 
+ 210              		.align	2
+ 211              	.LC20:
+ 212 0150 0D0A7374 		.ascii	"\015\012start passthrough......\015\000"
+ 212      61727420 
+ 212      70617373 
+ 212      7468726F 
+ 212      7567682E 
+ 213              		.section	.text.ESP8266_StaTcpClient_Unvarnish_ConfigTest,"ax",%progbits
+ 214              		.align	1
+ 215              		.global	ESP8266_StaTcpClient_Unvarnish_ConfigTest
+ 216              		.syntax unified
+ 217              		.thumb
+ 218              		.thumb_func
+ 219              		.fpu softvfp
+ 221              	ESP8266_StaTcpClient_Unvarnish_ConfigTest:
+ 222              	.LFB33:
+  58:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  59:./Hardware/ESP8266/bsp_esp8266_test.c **** /********************************************连接服务器***************************************
+  60:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  61:./Hardware/ESP8266/bsp_esp8266_test.c **** /**
+  62:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @brief  ESP8266 StaTcpClient Unvarnish 配置测试函数
+  63:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @param  无
+  64:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @retval 无
+  65:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @note   连接到心知天气，并进入穿透模式
+  66:./Hardware/ESP8266/bsp_esp8266_test.c ****  */
+  67:./Hardware/ESP8266/bsp_esp8266_test.c **** void ESP8266_StaTcpClient_Unvarnish_ConfigTest(void)
+ARM GAS  /tmp/ccHm4Ruu.s 			page 7
+
+
+  68:./Hardware/ESP8266/bsp_esp8266_test.c **** {
+ 223              		.loc 1 68 1 is_stmt 1 view -0
+ 224              		.cfi_startproc
+ 225              		@ args = 0, pretend = 0, frame = 0
+ 226              		@ frame_needed = 0, uses_anonymous_args = 0
+ 227 0000 08B5     		push	{r3, lr}
+ 228              	.LCFI3:
+ 229              		.cfi_def_cfa_offset 8
+ 230              		.cfi_offset 3, -8
+ 231              		.cfi_offset 14, -4
+  69:./Hardware/ESP8266/bsp_esp8266_test.c ****   //正在配置 ESP8266
+  70:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nConfiguring ESP8266 ......\r\n" );
+ 232              		.loc 1 70 3 view .LVU29
+ 233 0002 2048     		ldr	r0, .L13
+ 234 0004 FFF7FEFF 		bl	puts
+ 235              	.LVL16:
+  71:./Hardware/ESP8266/bsp_esp8266_test.c ****   //使能ESP8266
+  72:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nENABLE ESP8266 ......\r\n" );
+ 236              		.loc 1 72 3 view .LVU30
+ 237 0008 1F48     		ldr	r0, .L13+4
+ 238 000a FFF7FEFF 		bl	puts
+ 239              	.LVL17:
+  73:./Hardware/ESP8266/bsp_esp8266_test.c **** 	macESP8266_CH_ENABLE();
+ 240              		.loc 1 73 2 view .LVU31
+ 241 000e 2021     		movs	r1, #32
+ 242 0010 1E48     		ldr	r0, .L13+8
+ 243 0012 FFF7FEFF 		bl	GPIO_SetBits
+ 244              	.LVL18:
+  74:./Hardware/ESP8266/bsp_esp8266_test.c **** 	while( ! ESP8266_AT_Test() );
+ 245              		.loc 1 74 2 view .LVU32
+ 246              	.L6:
+ 247              		.loc 1 74 30 discriminator 1 view .LVU33
+ 248              		.loc 1 74 7 discriminator 1 view .LVU34
+ 249              		.loc 1 74 11 is_stmt 0 discriminator 1 view .LVU35
+ 250 0016 FFF7FEFF 		bl	ESP8266_AT_Test
+ 251              	.LVL19:
+ 252              		.loc 1 74 7 discriminator 1 view .LVU36
+ 253 001a 0028     		cmp	r0, #0
+ 254 001c FBD0     		beq	.L6
+  75:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+  76:./Hardware/ESP8266/bsp_esp8266_test.c ****   //正在配置工作模式
+  77:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nConfiguring work mode: STA ......\r\n" );
+ 255              		.loc 1 77 3 is_stmt 1 view .LVU37
+ 256 001e 1C48     		ldr	r0, .L13+12
+ 257 0020 FFF7FEFF 		bl	puts
+ 258              	.LVL20:
+  78:./Hardware/ESP8266/bsp_esp8266_test.c **** 	while( ! ESP8266_Net_Mode_Choose ( STA ) );
+ 259              		.loc 1 78 2 view .LVU38
+ 260              	.L7:
+ 261              		.loc 1 78 44 discriminator 1 view .LVU39
+ 262              		.loc 1 78 7 discriminator 1 view .LVU40
+ 263              		.loc 1 78 11 is_stmt 0 discriminator 1 view .LVU41
+ 264 0024 0020     		movs	r0, #0
+ 265 0026 FFF7FEFF 		bl	ESP8266_Net_Mode_Choose
+ 266              	.LVL21:
+ 267              		.loc 1 78 7 discriminator 1 view .LVU42
+ 268 002a 0028     		cmp	r0, #0
+ARM GAS  /tmp/ccHm4Ruu.s 			page 8
+
+
+ 269 002c FAD0     		beq	.L7
+  79:./Hardware/ESP8266/bsp_esp8266_test.c ****   
+  80:./Hardware/ESP8266/bsp_esp8266_test.c ****   //正在连接
+  81:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nConnecting WiFi ......\r\n" );
+ 270              		.loc 1 81 3 is_stmt 1 view .LVU43
+ 271 002e 1948     		ldr	r0, .L13+16
+ 272 0030 FFF7FEFF 		bl	puts
+ 273              	.LVL22:
+  82:./Hardware/ESP8266/bsp_esp8266_test.c ****   while( ! ESP8266_JoinAP ( macUser_ESP8266_ApSsid, macUser_ESP8266_ApPwd ) );	
+ 274              		.loc 1 82 3 view .LVU44
+ 275              	.L8:
+ 276              		.loc 1 82 78 discriminator 1 view .LVU45
+ 277              		.loc 1 82 8 discriminator 1 view .LVU46
+ 278              		.loc 1 82 12 is_stmt 0 discriminator 1 view .LVU47
+ 279 0034 1849     		ldr	r1, .L13+20
+ 280 0036 1948     		ldr	r0, .L13+24
+ 281 0038 FFF7FEFF 		bl	ESP8266_JoinAP
+ 282              	.LVL23:
+ 283              		.loc 1 82 8 discriminator 1 view .LVU48
+ 284 003c 0028     		cmp	r0, #0
+ 285 003e F9D0     		beq	.L8
+  83:./Hardware/ESP8266/bsp_esp8266_test.c **** 	
+  84:./Hardware/ESP8266/bsp_esp8266_test.c ****   //禁止多连接
+  85:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nDisable multiple connections ......\r\n" );
+ 286              		.loc 1 85 3 is_stmt 1 view .LVU49
+ 287 0040 1748     		ldr	r0, .L13+28
+ 288 0042 FFF7FEFF 		bl	puts
+ 289              	.LVL24:
+  86:./Hardware/ESP8266/bsp_esp8266_test.c **** 	while( ! ESP8266_Enable_MultipleId ( DISABLE ) );
+ 290              		.loc 1 86 2 view .LVU50
+ 291              	.L9:
+ 292              		.loc 1 86 50 discriminator 1 view .LVU51
+ 293              		.loc 1 86 7 discriminator 1 view .LVU52
+ 294              		.loc 1 86 11 is_stmt 0 discriminator 1 view .LVU53
+ 295 0046 0020     		movs	r0, #0
+ 296 0048 FFF7FEFF 		bl	ESP8266_Enable_MultipleId
+ 297              	.LVL25:
+ 298              		.loc 1 86 7 discriminator 1 view .LVU54
+ 299 004c 0028     		cmp	r0, #0
+ 300 004e FAD0     		beq	.L9
+  87:./Hardware/ESP8266/bsp_esp8266_test.c **** 	
+  88:./Hardware/ESP8266/bsp_esp8266_test.c ****   //正在连接服务器
+  89:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nConnecting to server ......\r\n" );
+ 301              		.loc 1 89 3 is_stmt 1 view .LVU55
+ 302 0050 1448     		ldr	r0, .L13+32
+ 303 0052 FFF7FEFF 		bl	puts
+ 304              	.LVL26:
+  90:./Hardware/ESP8266/bsp_esp8266_test.c **** 	while( !	ESP8266_Link_Server ( enumTCP, macUser_ESP8266_TcpServer_IP, macUser_ESP8266_TcpServer_Po
+ 305              		.loc 1 90 2 view .LVU56
+ 306              	.L10:
+ 307              		.loc 1 90 119 discriminator 1 view .LVU57
+ 308              		.loc 1 90 7 discriminator 1 view .LVU58
+ 309              		.loc 1 90 11 is_stmt 0 discriminator 1 view .LVU59
+ 310 0056 0523     		movs	r3, #5
+ 311 0058 134A     		ldr	r2, .L13+36
+ 312 005a 1449     		ldr	r1, .L13+40
+ 313 005c 0020     		movs	r0, #0
+ARM GAS  /tmp/ccHm4Ruu.s 			page 9
+
+
+ 314 005e FFF7FEFF 		bl	ESP8266_Link_Server
+ 315              	.LVL27:
+ 316              		.loc 1 90 7 discriminator 1 view .LVU60
+ 317 0062 0028     		cmp	r0, #0
+ 318 0064 F7D0     		beq	.L10
+  91:./Hardware/ESP8266/bsp_esp8266_test.c **** 	
+  92:./Hardware/ESP8266/bsp_esp8266_test.c ****   //进入透传发送模式
+  93:./Hardware/ESP8266/bsp_esp8266_test.c ****   printf( "\r\nEnter transparent transmission mode ......\r\n" );
+ 319              		.loc 1 93 3 is_stmt 1 view .LVU61
+ 320 0066 1248     		ldr	r0, .L13+44
+ 321 0068 FFF7FEFF 		bl	puts
+ 322              	.LVL28:
+  94:./Hardware/ESP8266/bsp_esp8266_test.c **** 	while( ! ESP8266_UnvarnishSend () );
+ 323              		.loc 1 94 2 view .LVU62
+ 324              	.L11:
+ 325              		.loc 1 94 37 discriminator 1 view .LVU63
+ 326              		.loc 1 94 7 discriminator 1 view .LVU64
+ 327              		.loc 1 94 11 is_stmt 0 discriminator 1 view .LVU65
+ 328 006c FFF7FEFF 		bl	ESP8266_UnvarnishSend
+ 329              	.LVL29:
+ 330              		.loc 1 94 7 discriminator 1 view .LVU66
+ 331 0070 0028     		cmp	r0, #0
+ 332 0072 FBD0     		beq	.L11
+  95:./Hardware/ESP8266/bsp_esp8266_test.c **** 	
+  96:./Hardware/ESP8266/bsp_esp8266_test.c ****   //配置 ESP8266 完毕
+  97:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf( "\r\nConfiguration of ESP8266 is complete\r\n" );
+ 333              		.loc 1 97 2 is_stmt 1 view .LVU67
+ 334 0074 0F48     		ldr	r0, .L13+48
+ 335 0076 FFF7FEFF 		bl	puts
+ 336              	.LVL30:
+  98:./Hardware/ESP8266/bsp_esp8266_test.c ****   
+  99:./Hardware/ESP8266/bsp_esp8266_test.c ****   //开始透传
+ 100:./Hardware/ESP8266/bsp_esp8266_test.c **** 	printf ( "\r\nstart passthrough......\r\n" );
+ 337              		.loc 1 100 2 view .LVU68
+ 338 007a 0F48     		ldr	r0, .L13+52
+ 339 007c FFF7FEFF 		bl	puts
+ 340              	.LVL31:
+ 101:./Hardware/ESP8266/bsp_esp8266_test.c **** }
+ 341              		.loc 1 101 1 is_stmt 0 view .LVU69
+ 342 0080 08BD     		pop	{r3, pc}
+ 343              	.L14:
+ 344 0082 00BF     		.align	2
+ 345              	.L13:
+ 346 0084 00000000 		.word	.LC8
+ 347 0088 20000000 		.word	.LC9
+ 348 008c 00080140 		.word	1073809408
+ 349 0090 3C000000 		.word	.LC10
+ 350 0094 64000000 		.word	.LC11
+ 351 0098 80000000 		.word	.LC12
+ 352 009c 8C000000 		.word	.LC13
+ 353 00a0 98000000 		.word	.LC14
+ 354 00a4 C0000000 		.word	.LC15
+ 355 00a8 E0000000 		.word	.LC16
+ 356 00ac E4000000 		.word	.LC17
+ 357 00b0 F8000000 		.word	.LC18
+ 358 00b4 28010000 		.word	.LC19
+ 359 00b8 50010000 		.word	.LC20
+ARM GAS  /tmp/ccHm4Ruu.s 			page 10
+
+
+ 360              		.cfi_endproc
+ 361              	.LFE33:
+ 363              		.section	.rodata.ESP8266_CheckRecvDataTest.str1.4,"aMS",%progbits,1
+ 364              		.align	2
+ 365              	.LC21:
+ 366 0000 0D0A5265 		.ascii	"\015\012Reconnecting to hotspot and server ......\015"
+ 366      636F6E6E 
+ 366      65637469 
+ 366      6E672074 
+ 366      6F20686F 
+ 367 002c 00       		.ascii	"\000"
+ 368 002d 000000   		.align	2
+ 369              	.LC22:
+ 370 0030 0D0A5265 		.ascii	"\015\012Reconnect to hotspot and server successfull"
+ 370      636F6E6E 
+ 370      65637420 
+ 370      746F2068 
+ 370      6F747370 
+ 371 005d 790D00   		.ascii	"y\015\000"
+ 372              		.section	.text.ESP8266_CheckRecvDataTest,"ax",%progbits
+ 373              		.align	1
+ 374              		.global	ESP8266_CheckRecvDataTest
+ 375              		.syntax unified
+ 376              		.thumb
+ 377              		.thumb_func
+ 378              		.fpu softvfp
+ 380              	ESP8266_CheckRecvDataTest:
+ 381              	.LFB34:
+ 102:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 103:./Hardware/ESP8266/bsp_esp8266_test.c **** /**************************************************************************************************
+ 104:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 105:./Hardware/ESP8266/bsp_esp8266_test.c **** /**
+ 106:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @brief  ESP8266 检查是否接收到了数据，检查连接和掉线重连
+ 107:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @param  无
+ 108:./Hardware/ESP8266/bsp_esp8266_test.c ****  * @retval 无
+ 109:./Hardware/ESP8266/bsp_esp8266_test.c ****  */
+ 110:./Hardware/ESP8266/bsp_esp8266_test.c **** void ESP8266_CheckRecvDataTest(void)
+ 111:./Hardware/ESP8266/bsp_esp8266_test.c **** {
+ 382              		.loc 1 111 1 is_stmt 1 view -0
+ 383              		.cfi_startproc
+ 384              		@ args = 0, pretend = 0, frame = 0
+ 385              		@ frame_needed = 0, uses_anonymous_args = 0
+ 386 0000 70B5     		push	{r4, r5, r6, lr}
+ 387              	.LCFI4:
+ 388              		.cfi_def_cfa_offset 16
+ 389              		.cfi_offset 4, -16
+ 390              		.cfi_offset 5, -12
+ 391              		.cfi_offset 6, -8
+ 392              		.cfi_offset 14, -4
+ 112:./Hardware/ESP8266/bsp_esp8266_test.c ****   uint8_t ucStatus;
+ 393              		.loc 1 112 3 view .LVU71
+ 113:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 114:./Hardware/ESP8266/bsp_esp8266_test.c ****   if( strEsp8266_Fram_Record .InfBit .FramFinishFlag )   //接收到数据
+ 394              		.loc 1 114 3 view .LVU72
+ 395              		.loc 1 114 38 is_stmt 0 view .LVU73
+ 396 0002 274B     		ldr	r3, .L27
+ 397 0004 B3F80034 		ldrh	r3, [r3, #1024]
+ARM GAS  /tmp/ccHm4Ruu.s 			page 11
+
+
+ 398              		.loc 1 114 5 view .LVU74
+ 399 0008 13F4004F 		tst	r3, #32768
+ 400 000c 03D1     		bne	.L24
+ 401              	.L16:
+ 115:./Hardware/ESP8266/bsp_esp8266_test.c ****   {
+ 116:./Hardware/ESP8266/bsp_esp8266_test.c ****       USART_ITConfig ( macESP8266_USARTx, USART_IT_RXNE, DISABLE ); //禁用串口接收中断
+ 117:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record .Data_RX_BUF [ strEsp8266_Fram_Record .InfBit .FramLength ]  = '\0';
+ 118:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 119:./Hardware/ESP8266/bsp_esp8266_test.c ****       //使用USART1将esp8266接收到的数据通过串口调试助手打印出来
+ 120:./Hardware/ESP8266/bsp_esp8266_test.c ****     //   printf("%s\n",strEsp8266_Fram_Record.Data_RX_BUF);
+ 121:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 122:./Hardware/ESP8266/bsp_esp8266_test.c ****       //解析数据后，执行的操作函数在这里调用
+ 123:./Hardware/ESP8266/bsp_esp8266_test.c **** 	  analytical_data();
+ 124:./Hardware/ESP8266/bsp_esp8266_test.c **** 	  
+ 125:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record .InfBit .FramLength = 0;                             //接收数据长
+ 126:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record.InfBit.FramFinishFlag = 0;                           //接收标志置
+ 127:./Hardware/ESP8266/bsp_esp8266_test.c ****       USART_ITConfig ( macESP8266_USARTx, USART_IT_RXNE, ENABLE ); //使能串口接收中断
+ 128:./Hardware/ESP8266/bsp_esp8266_test.c ****   }
+ 129:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 130:./Hardware/ESP8266/bsp_esp8266_test.c ****   if ( ucTcpClosedFlag )                                             //检测是否失去连接
+ 402              		.loc 1 130 3 is_stmt 1 view .LVU75
+ 403              		.loc 1 130 8 is_stmt 0 view .LVU76
+ 404 000e 254B     		ldr	r3, .L27+4
+ 405 0010 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 406              		.loc 1 130 6 view .LVU77
+ 407 0012 1BBB     		cbnz	r3, .L25
+ 408              	.L15:
+ 131:./Hardware/ESP8266/bsp_esp8266_test.c ****   {
+ 132:./Hardware/ESP8266/bsp_esp8266_test.c ****     ESP8266_ExitUnvarnishSend ();                                    //退出透传模式
+ 133:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 134:./Hardware/ESP8266/bsp_esp8266_test.c ****     do ucStatus = ESP8266_Get_LinkStatus ();                         //获取连接状态
+ 135:./Hardware/ESP8266/bsp_esp8266_test.c ****     while ( ! ucStatus );
+ 136:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 137:./Hardware/ESP8266/bsp_esp8266_test.c ****     if ( ucStatus == 4 )                                             //确认失去连接后重连
+ 138:./Hardware/ESP8266/bsp_esp8266_test.c ****     {
+ 139:./Hardware/ESP8266/bsp_esp8266_test.c ****       //正在重连热点和服务器
+ 140:./Hardware/ESP8266/bsp_esp8266_test.c ****       printf ( "\r\nReconnecting to hotspot and server ......\r\n" );
+ 141:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       while ( ! ESP8266_JoinAP ( macUser_ESP8266_ApSsid, macUser_ESP8266_ApPwd ) );
+ 143:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 144:./Hardware/ESP8266/bsp_esp8266_test.c ****       while ( !	ESP8266_Link_Server ( enumTCP, macUser_ESP8266_TcpServer_IP, macUser_ESP8266_TcpSer
+ 145:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 146:./Hardware/ESP8266/bsp_esp8266_test.c ****       //重连热点和服务器成功
+ 147:./Hardware/ESP8266/bsp_esp8266_test.c ****       printf ( "\r\nReconnect to hotspot and server successfully\r\n" );
+ 148:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 149:./Hardware/ESP8266/bsp_esp8266_test.c ****     }
+ 150:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 151:./Hardware/ESP8266/bsp_esp8266_test.c ****     while ( ! ESP8266_UnvarnishSend () );		
+ 152:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 153:./Hardware/ESP8266/bsp_esp8266_test.c ****   }
+ 154:./Hardware/ESP8266/bsp_esp8266_test.c **** }
+ 409              		.loc 1 154 1 view .LVU78
+ 410 0014 70BD     		pop	{r4, r5, r6, pc}
+ 411              	.L24:
+ 116:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record .Data_RX_BUF [ strEsp8266_Fram_Record .InfBit .FramLength ]  = '\0';
+ 412              		.loc 1 116 7 is_stmt 1 view .LVU79
+ 413 0016 244E     		ldr	r6, .L27+8
+ARM GAS  /tmp/ccHm4Ruu.s 			page 12
+
+
+ 414 0018 0022     		movs	r2, #0
+ 415 001a 40F22551 		movw	r1, #1317
+ 416 001e 3046     		mov	r0, r6
+ 417 0020 FFF7FEFF 		bl	USART_ITConfig
+ 418              	.LVL32:
+ 117:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 419              		.loc 1 117 7 view .LVU80
+ 117:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 420              		.loc 1 117 76 is_stmt 0 view .LVU81
+ 421 0024 1E4C     		ldr	r4, .L27
+ 422 0026 B4F80034 		ldrh	r3, [r4, #1024]
+ 423 002a C3F30E03 		ubfx	r3, r3, #0, #15
+ 117:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 424              		.loc 1 117 91 view .LVU82
+ 425 002e 0025     		movs	r5, #0
+ 426 0030 E554     		strb	r5, [r4, r3]
+ 123:./Hardware/ESP8266/bsp_esp8266_test.c **** 	  
+ 427              		.loc 1 123 4 is_stmt 1 view .LVU83
+ 428 0032 FFF7FEFF 		bl	analytical_data
+ 429              	.LVL33:
+ 125:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record.InfBit.FramFinishFlag = 0;                           //接收标志置
+ 430              		.loc 1 125 7 view .LVU84
+ 125:./Hardware/ESP8266/bsp_esp8266_test.c ****       strEsp8266_Fram_Record.InfBit.FramFinishFlag = 0;                           //接收标志置
+ 431              		.loc 1 125 50 is_stmt 0 view .LVU85
+ 432 0036 B4F80034 		ldrh	r3, [r4, #1024]
+ 433 003a 65F30E03 		bfi	r3, r5, #0, #15
+ 434 003e A4F80034 		strh	r3, [r4, #1024]	@ movhi
+ 126:./Hardware/ESP8266/bsp_esp8266_test.c ****       USART_ITConfig ( macESP8266_USARTx, USART_IT_RXNE, ENABLE ); //使能串口接收中断
+ 435              		.loc 1 126 7 is_stmt 1 view .LVU86
+ 126:./Hardware/ESP8266/bsp_esp8266_test.c ****       USART_ITConfig ( macESP8266_USARTx, USART_IT_RXNE, ENABLE ); //使能串口接收中断
+ 436              		.loc 1 126 52 is_stmt 0 view .LVU87
+ 437 0042 B4F80034 		ldrh	r3, [r4, #1024]
+ 438 0046 65F3CF33 		bfi	r3, r5, #15, #1
+ 439 004a A4F80034 		strh	r3, [r4, #1024]	@ movhi
+ 127:./Hardware/ESP8266/bsp_esp8266_test.c ****   }
+ 440              		.loc 1 127 7 is_stmt 1 view .LVU88
+ 441 004e 0122     		movs	r2, #1
+ 442 0050 40F22551 		movw	r1, #1317
+ 443 0054 3046     		mov	r0, r6
+ 444 0056 FFF7FEFF 		bl	USART_ITConfig
+ 445              	.LVL34:
+ 446 005a D8E7     		b	.L16
+ 447              	.L25:
+ 132:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 448              		.loc 1 132 5 view .LVU89
+ 449 005c FFF7FEFF 		bl	ESP8266_ExitUnvarnishSend
+ 450              	.LVL35:
+ 451              	.L18:
+ 134:./Hardware/ESP8266/bsp_esp8266_test.c ****     while ( ! ucStatus );
+ 452              		.loc 1 134 5 discriminator 1 view .LVU90
+ 134:./Hardware/ESP8266/bsp_esp8266_test.c ****     while ( ! ucStatus );
+ 453              		.loc 1 134 8 discriminator 1 view .LVU91
+ 134:./Hardware/ESP8266/bsp_esp8266_test.c ****     while ( ! ucStatus );
+ 454              		.loc 1 134 19 is_stmt 0 discriminator 1 view .LVU92
+ 455 0060 FFF7FEFF 		bl	ESP8266_Get_LinkStatus
+ 456              	.LVL36:
+ 135:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ARM GAS  /tmp/ccHm4Ruu.s 			page 13
+
+
+ 457              		.loc 1 135 11 is_stmt 1 discriminator 1 view .LVU93
+ 135:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 458              		.loc 1 135 5 is_stmt 0 discriminator 1 view .LVU94
+ 459 0064 0028     		cmp	r0, #0
+ 460 0066 FBD0     		beq	.L18
+ 137:./Hardware/ESP8266/bsp_esp8266_test.c ****     {
+ 461              		.loc 1 137 5 is_stmt 1 view .LVU95
+ 137:./Hardware/ESP8266/bsp_esp8266_test.c ****     {
+ 462              		.loc 1 137 8 is_stmt 0 view .LVU96
+ 463 0068 0428     		cmp	r0, #4
+ 464 006a 04D0     		beq	.L26
+ 465              	.LVL37:
+ 466              	.L22:
+ 151:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 467              		.loc 1 151 41 is_stmt 1 discriminator 1 view .LVU97
+ 151:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 468              		.loc 1 151 11 discriminator 1 view .LVU98
+ 151:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 469              		.loc 1 151 15 is_stmt 0 discriminator 1 view .LVU99
+ 470 006c FFF7FEFF 		bl	ESP8266_UnvarnishSend
+ 471              	.LVL38:
+ 151:./Hardware/ESP8266/bsp_esp8266_test.c ****     
+ 472              		.loc 1 151 11 discriminator 1 view .LVU100
+ 473 0070 0028     		cmp	r0, #0
+ 474 0072 FBD0     		beq	.L22
+ 475 0074 CEE7     		b	.L15
+ 476              	.LVL39:
+ 477              	.L26:
+ 140:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 478              		.loc 1 140 7 is_stmt 1 view .LVU101
+ 479 0076 0D48     		ldr	r0, .L27+12
+ 480              	.LVL40:
+ 140:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 481              		.loc 1 140 7 is_stmt 0 view .LVU102
+ 482 0078 FFF7FEFF 		bl	puts
+ 483              	.LVL41:
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 484              		.loc 1 142 7 is_stmt 1 view .LVU103
+ 485              	.L20:
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 486              		.loc 1 142 83 discriminator 1 view .LVU104
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 487              		.loc 1 142 13 discriminator 1 view .LVU105
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 488              		.loc 1 142 17 is_stmt 0 discriminator 1 view .LVU106
+ 489 007c 0C49     		ldr	r1, .L27+16
+ 490 007e 0D48     		ldr	r0, .L27+20
+ 491 0080 FFF7FEFF 		bl	ESP8266_JoinAP
+ 492              	.LVL42:
+ 142:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 493              		.loc 1 142 13 discriminator 1 view .LVU107
+ 494 0084 0028     		cmp	r0, #0
+ 495 0086 F9D0     		beq	.L20
+ 496              	.L21:
+ 144:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 497              		.loc 1 144 125 is_stmt 1 discriminator 1 view .LVU108
+ 144:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ARM GAS  /tmp/ccHm4Ruu.s 			page 14
+
+
+ 498              		.loc 1 144 13 discriminator 1 view .LVU109
+ 144:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 499              		.loc 1 144 17 is_stmt 0 discriminator 1 view .LVU110
+ 500 0088 0523     		movs	r3, #5
+ 501 008a 0B4A     		ldr	r2, .L27+24
+ 502 008c 0B49     		ldr	r1, .L27+28
+ 503 008e 0020     		movs	r0, #0
+ 504 0090 FFF7FEFF 		bl	ESP8266_Link_Server
+ 505              	.LVL43:
+ 144:./Hardware/ESP8266/bsp_esp8266_test.c ****       
+ 506              		.loc 1 144 13 discriminator 1 view .LVU111
+ 507 0094 0028     		cmp	r0, #0
+ 508 0096 F7D0     		beq	.L21
+ 147:./Hardware/ESP8266/bsp_esp8266_test.c **** 
+ 509              		.loc 1 147 7 is_stmt 1 view .LVU112
+ 510 0098 0948     		ldr	r0, .L27+32
+ 511 009a FFF7FEFF 		bl	puts
+ 512              	.LVL44:
+ 513 009e E5E7     		b	.L22
+ 514              	.L28:
+ 515              		.align	2
+ 516              	.L27:
+ 517 00a0 00000000 		.word	strEsp8266_Fram_Record
+ 518 00a4 00000000 		.word	.LANCHOR0
+ 519 00a8 00440040 		.word	1073759232
+ 520 00ac 00000000 		.word	.LC21
+ 521 00b0 80000000 		.word	.LC12
+ 522 00b4 8C000000 		.word	.LC13
+ 523 00b8 E0000000 		.word	.LC16
+ 524 00bc E4000000 		.word	.LC17
+ 525 00c0 30000000 		.word	.LC22
+ 526              		.cfi_endproc
+ 527              	.LFE34:
+ 529              		.global	ucTcpClosedFlag
+ 530              		.section	.bss.ucTcpClosedFlag,"aw",%nobits
+ 531              		.set	.LANCHOR0,. + 0
+ 534              	ucTcpClosedFlag:
+ 535 0000 00       		.space	1
+ 536              		.text
+ 537              	.Letext0:
+ 538              		.file 2 "/home/hao/Documents/gcc-arm-none-eabi/arm-none-eabi/include/machine/_default_types.h"
+ 539              		.file 3 "/home/hao/Documents/gcc-arm-none-eabi/arm-none-eabi/include/sys/_stdint.h"
+ 540              		.file 4 "./Libraries/CMSIS/stm32f10x.h"
+ 541              		.file 5 "./Hardware/ESP8266/bsp_esp8266.h"
+ 542              		.file 6 "./Hardware/ESP8266/bsp_esp8266_test.h"
+ 543              		.file 7 "./Libraries/STM32F10x_StdPeriph_Driver/inc/stm32f10x_usart.h"
+ 544              		.file 8 "./Libraries/STM32F10x_StdPeriph_Driver/inc/stm32f10x_gpio.h"
+ 545              		.file 9 "/home/hao/Documents/gcc-arm-none-eabi/arm-none-eabi/include/string.h"
+ 546              		.file 10 "/home/hao/Documents/gcc-arm-none-eabi/arm-none-eabi/include/stdio.h"
+ 547              		.file 11 "<built-in>"
+ARM GAS  /tmp/ccHm4Ruu.s 			page 15
+
+
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 bsp_esp8266_test.c
+     /tmp/ccHm4Ruu.s:16     .rodata.analytical_data.str1.4:0000000000000000 $d
+     /tmp/ccHm4Ruu.s:41     .text.analytical_data:0000000000000000 $t
+     /tmp/ccHm4Ruu.s:49     .text.analytical_data:0000000000000000 analytical_data
+     /tmp/ccHm4Ruu.s:160    .text.analytical_data:0000000000000080 $d
+     /tmp/ccHm4Ruu.s:173    .rodata.ESP8266_StaTcpClient_Unvarnish_ConfigTest.str1.4:0000000000000000 $d
+     /tmp/ccHm4Ruu.s:214    .text.ESP8266_StaTcpClient_Unvarnish_ConfigTest:0000000000000000 $t
+     /tmp/ccHm4Ruu.s:221    .text.ESP8266_StaTcpClient_Unvarnish_ConfigTest:0000000000000000 ESP8266_StaTcpClient_Unvarnish_ConfigTest
+     /tmp/ccHm4Ruu.s:346    .text.ESP8266_StaTcpClient_Unvarnish_ConfigTest:0000000000000084 $d
+     /tmp/ccHm4Ruu.s:364    .rodata.ESP8266_CheckRecvDataTest.str1.4:0000000000000000 $d
+     /tmp/ccHm4Ruu.s:373    .text.ESP8266_CheckRecvDataTest:0000000000000000 $t
+     /tmp/ccHm4Ruu.s:380    .text.ESP8266_CheckRecvDataTest:0000000000000000 ESP8266_CheckRecvDataTest
+     /tmp/ccHm4Ruu.s:517    .text.ESP8266_CheckRecvDataTest:00000000000000a0 $d
+     /tmp/ccHm4Ruu.s:534    .bss.ucTcpClosedFlag:0000000000000000 ucTcpClosedFlag
+     /tmp/ccHm4Ruu.s:535    .bss.ucTcpClosedFlag:0000000000000000 $d
+
+UNDEFINED SYMBOLS
+strstr
+sscanf
+printf
+strEsp8266_Fram_Record
+puts
+GPIO_SetBits
+ESP8266_AT_Test
+ESP8266_Net_Mode_Choose
+ESP8266_JoinAP
+ESP8266_Enable_MultipleId
+ESP8266_Link_Server
+ESP8266_UnvarnishSend
+USART_ITConfig
+ESP8266_ExitUnvarnishSend
+ESP8266_Get_LinkStatus
